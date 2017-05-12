@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        #grid {
+            color     : #fff;
+            font-size : 20px;
+        }
+
+        #title {
+            background-color : coral;
+        }
+
+        #score {
+            background-color : #8aff98;
+        }
+
+        #stats {
+            background-color : dodgerblue;
+        }
+
+        #board {
+            background-color : darkcyan;
+        }
+
+        #controls {
+            background-color : steelblue;
+        }
+    </style>
+</head>
+<body>
+<div id="grid">
+    <div id="title">Game Title</div>
+    <div id="score">Score</div>
+    <div id="stats">Stats</div>
+    <div id="board">Board</div>
+    <div id="controls">Controls</div>
+</div>
+<script src="../index.js"></script>
+<script>
+    //    let gridObj = Grid( '#grid', {
+    //        display                : 'grid',
+    //        'grid-template-columns': 'auto 1fr',
+    //        'grid-template-rows'   : 'auto  1fr auto'
+    //    }, {
+    //        '#title'   : {
+    //            'grid-column': 1,
+    //            'grid-row'   : 1
+    //        },
+    //        '#score'   : {
+    //            'grid-column': 1,
+    //            'grid-row'   : 3
+    //        },
+    //        '#stats'   : {
+    //            'grid-column': 1,
+    //            'grid-row'   : 2,
+    //            'align-self' : 'start'
+    //        },
+    //        '#board'   : {
+    //            'grid-column': 2,
+    //            'grid-row'   : '1 / span 2'
+    //        },
+    //        '#controls': {
+    //            'grid-column' : 2,
+    //            'grid-row'    : 3,
+    //            'justify-self': 'center'
+    //        }
+    //    } )
+    //
+    //    console.log( gridObj )
+
+    console.log( Grid( '#grid', {
+        'grid-template': `[header-top] "a   a   a"     [header-bottom]
+                             [main-top] "b   b   b" 1fr [main-bottom]
+                                      / auto 1fr auto;`
+    } ) )
+</script>
+</body>
+</html>
