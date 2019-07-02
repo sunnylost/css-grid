@@ -1,44 +1,51 @@
 ;(function(global) {
-    let doc = document,
-        QUOTATION = '"',
-        NONE = 'none',
-        GRID = 'grid',
-        GRID_T = 'grid-template',
-        GRID_T_R = 'grid-template-rows',
-        GRID_T_C = 'grid-template-columns',
-        GRID_T_A = 'grid-template-areas'
+    let doc = document
+    let QUOTATION = '"'
+    let NONE = 'none'
+    let GRID = 'grid'
+    let GRID_T = 'grid-template'
+    let GRID_T_R = 'grid-template-rows'
+    let GRID_T_C = 'grid-template-columns'
+    let GRID_T_A = 'grid-template-areas'
+    let rQuotation = /['"]/
 
-    function parseTrackList(val) {}
+    /**
+     * https://www.w3.org/TR/css3-grid-layout/#typedef-track-list
+     * @param val
+     */
+    function parseTrackList(val) {
+        console.log(val)
+    }
 
     function parseGridTemplate(attrs) {
+        let result = {}
         let gridTemplate = attrs[GRID_T]
 
         if (gridTemplate === NONE) {
-            attrs[GRID_T_R] = attrs[GRID_T_C] = attrs[GRID_T_A] = NONE
-        } else if (!gridTemplate.includes(QUOTATION) && gridTemplate.includes('/')) {
+            result[GRID_T_R] = result[GRID_T_C] = result[GRID_T_A] = NONE
+        } else if (!gridTemplate.match(rQuotation) && gridTemplate.includes('/')) {
             //https://www.w3.org/TR/css3-grid-layout/#grid-template-rowcol
             //<‘grid-template-rows’> / <‘grid-template-columns’>
             let vals = gridTemplate.split('/')
 
-            attrs[GRID_T_R] = vals[0]
-            attrs[GRID_T_C] = vals[1]
-            attrs[GRID_T_A] = NONE
+            result[GRID_T_R] = vals[0]
+            result[GRID_T_C] = vals[1]
+            result[GRID_T_A] = NONE
         } else {
             //https://www.w3.org/TR/css3-grid-layout/#grid-template-ascii
             //[ <line-names>? <string> <track-size>? <line-names>? ]+ [ / <explicit-track-list> ]?
             let str = gridTemplate.trim()
-
             let pieces = {
-                    areas: [],
-                    rows: '',
-                    columns: ''
-                },
-                rowName = '',
-                len = str.length,
-                i = 0,
-                rblank = /\s+/,
-                needARow = false,
-                char
+                areas: [],
+                rows: '',
+                columns: ''
+            }
+            let rowName = ''
+            let len = str.length
+            let i = 0
+            let rblank = /\s+/
+            let needARow = false
+            let char
 
             while (i < len) {
                 char = str[i]
@@ -86,13 +93,15 @@
             }
 
             //TODO: combine two adjacent names
-            attrs[GRID_T_R] = pieces.rows
-            attrs[GRID_T_C] = pieces.columns
-            attrs[GRID_T_A] = pieces.areas
+            result[GRID_T_R] = pieces.rows
+            result[GRID_T_C] = pieces.columns
+            result[GRID_T_A] = pieces.areas
         }
 
-        return attrs
+        return result
     }
+
+    function parseGridArea(area) {}
 
     function parseGridAttrs(attrs) {
         let gridAttrs = {}
@@ -103,15 +112,15 @@
             if (gridVal.includes('auto-flow')) {
                 //TODO
             } else {
-                parseGridTemplate(attrs)
+                gridAttrs = Object.assign(gridAttrs, parseGridTemplate(attrs))
             }
         } else if (attrs[GRID_T]) {
-            parseGridTemplate(attrs)
+            gridAttrs = Object.assign(gridAttrs, parseGridTemplate(attrs))
         }
 
-        gridAttrs[GRID_T_R] = attrs[GRID_T_R]
-        gridAttrs[GRID_T_C] = attrs[GRID_T_C]
-        gridAttrs[GRID_T_A] = attrs[GRID_T_A]
+        /* gridAttrs[GRID_T_R] = parseTrackList(attrs[GRID_T_R])
+        gridAttrs[GRID_T_C] = parseTrackList(attrs[GRID_T_C])
+        gridAttrs[GRID_T_A] = parseGridArea(attrs[GRID_T_A])*/
 
         gridAttrs.display = attrs.display || GRID
 
@@ -121,16 +130,13 @@
     function parseGridItemAttrs(attrs) {}
 
     function layout(containerEl, gridAttrs, gridItemAttrs) {
-        let gridObj = {
+        return {
             container: {
                 el: containerEl
             },
-
             gridAttrs,
             gridItemAttrs
         }
-
-        return gridObj
     }
 
     let Grid = (global.Grid = function(containerEl, attrs, childrenAttrs) {
